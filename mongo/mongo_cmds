@@ -1,0 +1,44 @@
+PARA LEVANTAR EL CONTAINER
+docker start 407f41cbe4f3
+
+PARA ENTRAR A SHELL MONGO:
+docker exec -it 407f41cbe4f3 mongosh
+
+PARA ENTRAR A LA BD
+use musicdb
+
+B)
+db.albums.aggregate([
+    {
+        $group: {
+            _id: "$Year",  // Done 'Year' es el campo que contiene el año del álbum
+            count: { $sum: 1 }
+        }
+    },
+    {
+        $sort: { count: -1 }  // Ordena los resultados por el campo 'count' de manera descendente
+    }
+]);
+
+C)
+db.albums.updateMany(
+    {},  // Filtra todos los documentos
+    [{
+        $set: {
+            score: { $subtract: [501, "$Number"] }  // Establece 'score' como 501 menos el valor de 'Number'
+        }
+    }]
+);
+
+D)
+db.albums.aggregate([
+    {
+        $group: {
+            _id: "$Artist",  // Agrupar por artista
+            totalScore: { $sum: "$score" }  // Sumar todos los scores por artista
+        }
+    },
+    {
+        $sort: { totalScore: -1 }  // Opcional: Ordenar por totalScore descendente
+    }
+]);
